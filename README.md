@@ -49,8 +49,9 @@ is added to the Thredds software stack to intercept and cache maps using memcach
 (http://memcached.org). To run this example you need to install the memcached
 service and have a working version of Thredds (version 4.3 or higher). The
 Java filter uses the XMemcached (http://code.google.com/p/xmemcached/) Java
-library to interface with the memcached service. A Java IDE such as Eclipse,
-NetBeans or IntelliJ is recommended for source code compilation.
+library to interface with the memcached service. XMemcached is distributed under the
+Apache 2.0 license. A Java IDE such as Eclipse, NetBeans or IntelliJ is recommended 
+for source code compilation.
 
 Source code dependencies: <br/>
 xmemcached-2.0.0.jar (included here in the java/lib folder)<br/>
