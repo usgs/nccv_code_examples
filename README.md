@@ -12,7 +12,7 @@ were developed in Exelis IDL for NetCDF data processing and analysis, Apache
 Flex for web-based visualization and Java for caching maps within the Unidata
 THREDDS Data Server software stack.
 
-IDL Data processing examples 
+IDL Data processing examples<br/>
 Example 1 demonstrates how to use the US States shape file packaged with IDL to 
 create a 30-arcsecond mask that assigns all the grid cells within each state to 
 the states FIPS code. This mask is used to determine which states are enclosed by
@@ -35,7 +35,7 @@ four climatology periods and 12 months. The resulting binary data file is a
 multidimensional array with the size [49,4,12] and metadata for the size
 of the array at the beginning of the file.
 
-Flex binary data loading example
+Flex binary data loading example<br/>
 Example 4 reads the binary file exported in Example 3 and plots the seasonal 
 cycle of maximum temperature from the ACCESS1-0 model for the four climatology 
 periods. A utility is provided for parsing the binary files exported by IDL in 
@@ -43,7 +43,7 @@ Example 3. This example was developed with Apache Flex 4.6 SDK, but should also
 work in previous versions of Adobe Flex. A live version of this example can be 
 found at: http://regclim.coas.oregonstate.edu/nccv_examples
 
-Java Filter for caching maps with Memcached
+Java Filter for caching maps with Memcached<br/>
 The final example includes the Java source code for a web application filter that
 is added to the Thredds software stack to intercept and cache maps using memcached
 (http://memcached.org). To run this example you need to install the memcached
