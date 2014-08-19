@@ -52,11 +52,11 @@ Java filter uses the XMemcached (http://code.google.com/p/xmemcached/) Java
 library to interface with the memcached service. A Java IDE such as Eclipse,
 NetBeans or IntelliJ is recommended for source code compilation.
 
-Source code dependencies: 
-xmemcached-2.0.0.jar (included here in the java/lib folder)
-commons-codec-1.6.jar (included in the Thredds web application)
-slf4j-api-1.7.5.jar (included in the Thredds web application)
-servlet-api.jar(included in Tomcat installation)
+Source code dependencies: <br/>
+xmemcached-2.0.0.jar (included here in the java/lib folder)<br/>
+commons-codec-1.6.jar (included in the Thredds web application)<br/>
+slf4j-api-1.7.5.jar (included in the Thredds web application)<br/>
+servlet-api.jar (included in Tomcat installation)<br/>
 
 Once compiled, the resulting class files should be copied to the thredds
 web application at: /thredds/WEB-INF/classes/gov/usgs/tds/
