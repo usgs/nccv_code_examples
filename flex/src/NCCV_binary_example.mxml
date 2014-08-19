@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--This software is in the public domain because it contains materials that originally came from the 
+    United States Geological Survey, an agency of the United States Department of Interior. For more 
+    information, see the official USGS copyright policy at http://www.usgs.gov/visual-id/credit_usgs.html#copyright
+
+	Example 4: This example demonstrates how the binary files writen in Example 3 can be read and plotted 
+	in Flex. The example charts the seasonal cycle of Max Temperature from the ACCESS1-0 model for
+	four climatology periods.-->
+
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   applicationComplete="onApplicationComplete()">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			import gov.usgs.nccv.examples.BinaryUtils;
+			
+			//store the multidimensional array data exported in binary format from IDL
+			private var idlData:Array;
+			
+			//dynamic variable to store the formated data displayed in the column chart
+			[Bindable]
+			private var chartTimeSeries:ArrayCollection = new ArrayCollection();
+			
+			//define the abbreviations for each month
+			private var monthsAbrs:Array = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+			
+			//define the state names in alphabetical/FIPS order
+			[Bindable]
+			private var stateNames:ArrayCollection = new ArrayCollection(["Alabama","Arizona","Arkansas","California","Colorado","Connecticut",
+				"Delaware","District of Columbia","Florida","Georgia","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine",
+				"Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire",
+				"New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island",
+				"South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"]);
+			
+			//when the application is initialized, load the binary data from Example 3.
+			private function onApplicationComplete():void
+			{
+				var loader:URLLoader = new URLLoader();
+				//set the data format to binary
+				loader.dataFormat = URLLoaderDataFormat.BINARY;
+				
+				//configure the event handlers for the URLoader to process the file or display a warning if the file failed to load
+				configureListeners(loader);
+				
+				//load the sample data created in Example 3
+				var request:URLRequest = new URLRequest('http://regclim.coas.oregonstate.edu/nccv_examples/ACCESS1-0_rcp85_tasmax.bin');
+				loader.load(request);
+			}
+			
+			//create event handlers
+			private function configureListeners(dispatcher:IEventDispatcher):void {
+				dispatcher.addEventListener(Event.COMPLETE, completeHandler);
+				dispatcher.addEventListener(Event.OPEN, openHandler);
+				dispatcher.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+				dispatcher.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+				dispatcher.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
+				dispatcher.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+			}
+			
+			//function that executes when the file has successfully loaded.
+			private function completeHandler(event:Event):void {
+				var loader:URLLoader = URLLoader(event.target);
+				
+				//cast the ouput to a binary array with little endian byte order
+				var myBinDdata:ByteArray = loader.data as ByteArray;
+				myBinDdata.endian = Endian.LITTLE_ENDIAN;
+				
+				//decompress the file using ZLIB compression 
+				myBinDdata.inflate();
+				
+				//read the binary data and scale it by 0.1 since the data was stored as integers multiplied by 10. 
+				idlData = BinaryUtils.readBinaryData(myBinDdata, 0.1);
+				
+				//update the column chart once data has been loaded and read
+				updateChart();
+			}
+			
+			private function openHandler(event:Event):void {
+				trace("openHandler: " + event);
+			}
+			
+			private function progressHandler(event:ProgressEvent):void {
+				trace("progressHandler loaded:" + event.bytesLoaded + " total: " + event.bytesTotal);
+			}
+			
+			private function securityErrorHandler(event:SecurityErrorEvent):void {
+				trace("securityErrorHandler: " + event);
+			}
+			
+			private function httpStatusHandler(event:HTTPStatusEvent):void {
+				trace("httpStatusHandler: " + event);
+			}
+			
+			private function ioErrorHandler(event:IOErrorEvent):void {
+				trace("ioErrorHandler: " + event);
+			}
+			
+			//function to chart sample code by month for all four time periods for a selected state
+			private function updateChart():void
+			{
+				chartTimeSeries.removeAll();
+				for(var m:uint=0; m < 12; m++)
+				{
+					var chartObject:Object = {month:monthsAbrs[m], 
+						value1950_2005: idlData[stateDropDown.selectedIndex][0][m],
+						value2025_2049: idlData[stateDropDown.selectedIndex][1][m],
+						value2050_2074: idlData[stateDropDown.selectedIndex][2][m],
+						value2075_2099: idlData[stateDropDown.selectedIndex][3][m]};
+					
+					chartTimeSeries.addItem(chartObject);	
+				}
+			}
+			
+		]]>
+	</fx:Script>
+
+	<!-- Visual components for charting the sample data and dropdown list for selecting a state. -->
+	
+	<s:Panel left="20" right="20" top="20" bottom="20" title="{stateDropDown.selectedItem} Max Temperature (ACCESS1-0 RCP8.5)">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		<mx:ColumnChart id="colChart" width="100%" height="100%" dataProvider="{chartTimeSeries}" showDataTips="true">
+			<mx:horizontalAxis>
+				<mx:CategoryAxis categoryField="month"/>
+			</mx:horizontalAxis>
+			<mx:verticalAxis>
+				<mx:LinearAxis baseAtZero="false" title="Max Temperature (K)"/>
+			</mx:verticalAxis>
+			<mx:series>
+				<mx:ColumnSeries
+					xField="month" 
+					yField="value1950_2005" 
+					displayName="1950-2005"/>
+				<mx:ColumnSeries
+					xField="month" 
+					yField="value2025_2049" 
+					displayName="2025-2049"/>
+				<mx:ColumnSeries
+					xField="month" 
+					yField="value2050_2074" 
+					displayName="2050-2074"/>
+				<mx:ColumnSeries
+					xField="month" 
+					yField="value2075_2099" 
+					displayName="2075-2099"/>
+			</mx:series>
+		</mx:ColumnChart>
+		
+		<mx:Legend dataProvider="{colChart}" direction="horizontal"/>
+		
+		<s:controlBarContent>
+			<s:DropDownList id="stateDropDown" dataProvider="{stateNames}" requireSelection="true" width="200" change="updateChart()"/>
+		</s:controlBarContent>
+	</s:Panel>
+	
+</s:Application>
