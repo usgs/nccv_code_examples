@@ -66,17 +66,21 @@ The xmemcached-2.0.0.jar needs to be copied to the web application lib folder:
 
 The Thredds web.xml file needs to be modified to enable the memcached filter:
 
-Add the memcache file to the list of filters at the top of the file: 
+Add the memcache file to the list of filters at the top of the file:
+``` 
 <filter>
    <filter-name>MemcacheFilter</filter-name>
    <filter-class>gov.usgs.tds.XMemcacheFilter</filter-class>
 </filter>
+```
 
 Add the MemcacheFilter mapping to the top of the filter mapping list:
+```
 <filter-mapping>
    <filter-name>MemcacheFilter</filter-name>
    <servlet-name>wms</servlet-name>
 </filter-mapping>
+```
 
 The Tomcat web server will need to restarted after the web.xml file has
 been edited. 
